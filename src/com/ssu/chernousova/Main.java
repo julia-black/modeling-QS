@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Main {
 
-    public static final int N = 1000;
-    private static final double p = 0.5;
+    public static final int N = 100000;
+    private static final double p = 0.2;
 
     private static void modeling_2_1_12() {
         int countWin1 = 0;
@@ -102,14 +102,14 @@ public class Main {
     }
 
     public static double getExp() {
-        double X, l = 0.5;
-        X = -(1 / l) * Math.log(Math.random());
+        double X, lambda = 0.5;
+        X = -(1 / lambda) * Math.log(Math.random());
         return X;
     }
 
     private static void modeling_3_1_12() {
         /* Дана СМО типа M | M |1. После обслуживания, требование с заданной вероятностью p возвращается в систему обслуживания, а с вероят-
-        ностью 1− p покидает эту систему обслуживания. Построить имитационную модель системы. На основании 1000 выборочных значений оценить u и n .*/
+        ностью 1−p покидает эту систему обслуживания. Построить имитационную модель системы. На основании 1000 выборочных значений оценить u и n .*/
 
         /*M(пуассоновский поток требований)|M(последовательность независимых, одинаково распределенных экспоненциально длительностей обслуживания на каждом приборе)
         |1(число обслуживающих приборов)|беск.(макс.длина очереди)
@@ -131,8 +131,6 @@ public class Main {
             time += newTime;
         }
 
-        System.out.println(demands);
-
         time = 0.0;
         Device device = new Device();
 
@@ -143,8 +141,7 @@ public class Main {
 
         int idx = 0;
         while (idx < demands.size()) {
-           // System.out.println("Time: " + time + "\n");
-
+            // System.out.println("Time: " + time + "\n");
             //Если устройство не занято
             if (time == device.getTimeEnd()) {
                 if (queue.size() == 0) {
@@ -152,34 +149,34 @@ public class Main {
                     time = demands.get(idx).getTimeIn();
                     device.executeDemand(time, demands.get(idx));
 
-                  //  System.out.println("Executing in device");
-                  //  System.out.println("timeIn: " + demands.get(idx).getTimeIn());
-                  //  System.out.println("timeStart: " + demands.get(idx).getTimeStart());
-                  //  System.out.println("timeEnd: " + device.getTimeEnd());
+                    //  System.out.println("Executing in device");
+                    //  System.out.println("timeIn: " + demands.get(idx).getTimeIn());
+                    //  System.out.println("timeStart: " + demands.get(idx).getTimeStart());
+                    //  System.out.println("timeEnd: " + device.getTimeEnd());
 
-                    if(Math.random() > p) {
+                    if (Math.random() < p) {
                         queue.add(demands.get(idx));
                     }
-
                     idx++;
                 } else {
-                   // System.out.println("Executing in device of queue");
-                   // System.out.println("timeIn: " + queue.peek().getTimeIn());
+                    // System.out.println("Executing in device of queue");
+                    // System.out.println("timeIn: " + queue.peek().getTimeIn());
 
                     Demand demand = queue.poll();
                     device.executeDemand(time, demand);
 
-                    if(Math.random() > p) {
+                    if (Math.random() < p) {
                         queue.add(demand);
                     }
 
-                   // System.out.println("timeEnd: " + device.getTimeEnd());
+                    // System.out.println("timeEnd: " + device.getTimeEnd());
                 }
             } else {
+
                 //если уст-во занято
                 queue.add(demands.get(idx));
-               // System.out.println("Adding in queue");
-               // System.out.println("timeIn: " + demands.get(idx).getTimeIn());
+                // System.out.println("Adding in queue");
+                // System.out.println("timeIn: " + demands.get(idx).getTimeIn());
                 idx++;
             }
 
@@ -199,17 +196,16 @@ public class Main {
                 while (queue.size() != 0) {
                     tempTime.set(queue.size(), tempTime.get(queue.size()) + device.getTimeEnd() - time);
                     time = device.getTimeEnd();
-                    //System.out.println("Executing in device of queue " + queue.peek().getTimeIn());
+
                     device.executeDemand(time, queue.poll());
-                   // System.out.println("timeEnd: " + device.getTimeEnd());
+                    //System.out.println("Executing in device of queue " + queue.peek().getTimeIn());
+                    // System.out.println("timeEnd: " + device.getTimeEnd());
                 }
             }
-
-           // System.out.println(tempTime.toString());
-           // System.out.println("\n____");
+            // System.out.println(tempTime.toString());
+            // System.out.println("\n____");
         }
 
-       // System.out.println(demands);
         double u = 0.0, n = 0.0;
         for (int i = 0; i < N; i++) {
             u += demands.get(i).getTimeEnd() - demands.get(i).getTimeIn();
